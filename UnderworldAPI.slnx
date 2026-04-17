@@ -1,0 +1,26 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Services/" />
+  <Folder Name="/src/Services/Purchases/">
+    <Project Path="src/Services/Purchases/UnderworldAPI.Purchases.API/UnderworldAPI.Purchases.API.csproj" />
+    <Project Path="src/Services/Purchases/UnderworldAPI.Purchases.Application/UnderworldAPI.Purchases.Application.csproj" />
+    <Project Path="src/Services/Purchases/UnderworldAPI.Purchases.Domain/UnderworldAPI.Purchases.Domain.csproj" />
+    <Project Path="src/Services/Purchases/UnderworldAPI.Purchases.Infrastructure/UnderworldAPI.Purchases.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Sales/">
+    <Project Path="src/Services/Sales/UnderworldAPI.Sales.API/UnderworldAPI.Sales.API.csproj" />
+    <Project Path="src/Services/Sales/UnderworldAPI.Sales.Application/UnderworldAPI.Sales.Application.csproj" />
+    <Project Path="src/Services/Sales/UnderworldAPI.Sales.Domain/UnderworldAPI.Sales.Domain.csproj" />
+    <Project Path="src/Services/Sales/UnderworldAPI.Sales.Infrastructure/UnderworldAPI.Sales.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="src/Shared/UnderworldAPI.Shared.Domain/UnderworldAPI.Shared.Domain.csproj" />
+    <Project Path="src/Shared/UnderworldAPI.Shared.Infrastructure/UnderworldAPI.Shared.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/UnderworldAPI.Purchases.Application.Tests/UnderworldAPI.Purchases.Application.Tests.csproj" />
+    <Project Path="tests/UnderworldAPI.Purchases.Domain.Tests/UnderworldAPI.Purchases.Domain.Tests.csproj" />
+    <Project Path="tests/UnderworldAPI.Sales.Application.Tests/UnderworldAPI.Sales.Application.Tests.csproj" />
+    <Project Path="tests/UnderworldAPI.Sales.Domain.Tests/UnderworldAPI.Sales.Domain.Tests.csproj" />
+  </Folder>
+</Solution>
