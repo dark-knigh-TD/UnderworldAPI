@@ -1,0 +1,46 @@
+# Override para desarrollo local.
+# Este archivo se aplica automáticamente sobre docker-compose.yml cuando corres
+# 'docker compose up' sin flags adicionales. Nunca debe subirse con secrets reales.
+services:
+
+  sales-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      # Apunta al sqlserver del compose — nombre del servicio como hostname
+      - ConnectionStrings__SalesDb=Server=sqlserver,1433;Database=UnderworldDB;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;
+      # En desarrollo no hay Service Bus real — puedes usar Azurite o simplemente no publicar eventos
+      - AzureServiceBus__ConnectionString=${SERVICE_BUS_CONNECTION_STRING:-Endpoint=sb://localhost/}
+      - AzureServiceBus__TopicName=sales-events
+    ports:
+      - "5100:8080"    # Sales API disponible en localhost:5100
+    volumes:
+      # Hot reload de código en desarrollo (opcional con dotnet watch)
+      - ./src/Services/Sales:/app/src/Services/Sales
+    build:
+      target: build   # Usa el stage de build, no el de runtime — incluye SDK para debugging
+
+  purchases-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__PurchasesDb=Server=sqlserver,1433;Database=UnderworldDB;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;
+      - AzureServiceBus__ConnectionString=${SERVICE_BUS_CONNECTION_STRING:-Endpoint=sb://localhost/}
+      - AzureServiceBus__TopicName=purchases-events
+    ports:
+      - "5200:8080"    # Purchases API disponible en localhost:5200
+    volumes:
+      - ./src/Services/Purchases:/app/src/Services/Purchases
+    build:
+      target: build
+
+  sqlserver:
+    ports:
+      - "1433:1433"    # Expone SQL Server para conectarte con SSMS / Azure Data Studio
+    volumes:
+      # Persiste datos entre reinicios del contenedor en desarrollo
+      - sqlserver-data:/var/opt/mssql
+
+volumes:
+  sqlserver-data:
+    driver: local

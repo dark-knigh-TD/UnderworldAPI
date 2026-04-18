@@ -1,0 +1,55 @@
+# ── Git ──────────────────────────────────────────────────────────
+.git
+.gitignore
+.gitattributes
+
+# ── .NET build outputs — nunca deben entrar al contexto de build
+**/bin/
+**/obj/
+
+# ── Visual Studio / VS Code ───────────────────────────────────────
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ── Rider ─────────────────────────────────────────────────────────
+.idea/
+
+# ── Tests — no son necesarios en la imagen de producción ──────────
+tests/
+**/Tests/
+**/*.Tests.csproj
+TestResults/
+coverage/
+*.coveragexml
+
+# ── Docker compose — no necesario dentro del contenedor ───────────
+docker-compose*.yml
+**/Dockerfile
+
+# ── Pipelines e IaC — solo para CI/CD, no para runtime ───────────
+pipelines/
+
+# ── Secretos y configuración local ───────────────────────────────
+.env
+.env.*
+!.env.example
+**/appsettings.Development.json
+**/appsettings.Local.json
+
+# ── Documentación ─────────────────────────────────────────────────
+README.md
+docs/
+*.md
+
+# ── OS ────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs ──────────────────────────────────────────────────────────
+logs/
+*.log

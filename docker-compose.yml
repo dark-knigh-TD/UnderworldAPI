@@ -1,0 +1,71 @@
+# Archivo base — define los servicios y su configuración de producción.
+# No contiene puertos expuestos ni volúmenes de desarrollo — eso va en override.
+services:
+
+  sales-api:
+    image: underworldacr.azurecr.io/underworld-sales-api:latest
+    build:
+      context: .
+      dockerfile: src/Services/Sales/UnderworldAPI.Sales.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__SalesDb=${SALES_DB_CONNECTION_STRING}
+      - AzureServiceBus__ConnectionString=${SERVICE_BUS_CONNECTION_STRING}
+      - AzureServiceBus__TopicName=sales-events
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - underworld-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  purchases-api:
+    image: underworldacr.azurecr.io/underworld-purchases-api:latest
+    build:
+      context: .
+      dockerfile: src/Services/Purchases/UnderworldAPI.Purchases.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__PurchasesDb=${PURCHASES_DB_CONNECTION_STRING}
+      - AzureServiceBus__ConnectionString=${SERVICE_BUS_CONNECTION_STRING}
+      - AzureServiceBus__TopicName=purchases-events
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - underworld-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SQL_SA_PASSWORD}
+      - MSSQL_PID=Developer
+    networks:
+      - underworld-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SQL_SA_PASSWORD}", "-Q", "SELECT 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+networks:
+  underworld-network:
+    driver: bridge
