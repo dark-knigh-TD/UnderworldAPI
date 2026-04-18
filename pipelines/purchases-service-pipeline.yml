@@ -1,0 +1,148 @@
+# Pipeline específico del microservicio Purchases.
+# Mismo patrón que Sales — solo cambian nombres y paths.
+
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+      - feature/*
+  paths:
+    include:
+      - src/Services/Purchases/**
+      - src/Shared/**
+      - tests/UnderworldAPI.Purchases.Domain.Tests/**
+      - tests/UnderworldAPI.Purchases.Application.Tests/**
+
+variables:
+  buildConfiguration: 'Release'
+  containerRegistry: 'underworldacr.azurecr.io'
+  purchasesImageRepository: 'underworld-purchases-api'
+  imageTag: '$(Build.BuildId)'
+  dotnetVersion: '10.x'
+
+stages:
+
+  # ── Stage: Restore & Build ───────────────────────────────────
+  - stage: Build
+    displayName: 'Build Purchases Service'
+    jobs:
+      - job: Build
+        displayName: 'Restore and Build'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: UseDotNet@2
+            displayName: 'Use .NET $(dotnetVersion)'
+            inputs:
+              version: '$(dotnetVersion)'
+
+          - script: |
+              dotnet restore src/Services/Purchases/UnderworldAPI.Purchases.API/UnderworldAPI.Purchases.API.csproj
+            displayName: 'Restore packages'
+
+          - script: |
+              dotnet build src/Services/Purchases/UnderworldAPI.Purchases.API/UnderworldAPI.Purchases.API.csproj \
+                --no-restore \
+                -c $(buildConfiguration)
+            displayName: 'Build Purchases API'
+
+  # ── Stage: Test ──────────────────────────────────────────────
+  - stage: Test
+    displayName: 'Test Purchases Service'
+    dependsOn: Build
+    jobs:
+      - job: UnitTests
+        displayName: 'Run Unit Tests'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              version: '$(dotnetVersion)'
+
+          - script: dotnet restore
+            displayName: 'Restore all packages'
+
+          - script: |
+              dotnet test tests/UnderworldAPI.Purchases.Domain.Tests/UnderworldAPI.Purchases.Domain.Tests.csproj \
+                -c $(buildConfiguration) \
+                --no-restore \
+                --collect:"XPlat Code Coverage" \
+                --results-directory $(Agent.TempDirectory)/TestResults/Domain \
+                --logger "trx;LogFileName=purchases-domain-results.trx"
+            displayName: 'Run Purchases Domain Tests'
+
+          - script: |
+              dotnet test tests/UnderworldAPI.Purchases.Application.Tests/UnderworldAPI.Purchases.Application.Tests.csproj \
+                -c $(buildConfiguration) \
+                --no-restore \
+                --collect:"XPlat Code Coverage" \
+                --results-directory $(Agent.TempDirectory)/TestResults/Application \
+                --logger "trx;LogFileName=purchases-application-results.trx"
+            displayName: 'Run Purchases Application Tests'
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            condition: always()
+            inputs:
+              testResultsFormat: 'VSTest'
+              testResultsFiles: '$(Agent.TempDirectory)/TestResults/**/*.trx'
+              mergeTestResults: true
+              testRunTitle: 'Purchases Service Tests'
+
+          - task: PublishCodeCoverageResults@2
+            displayName: 'Publish Code Coverage'
+            condition: always()
+            inputs:
+              summaryFileLocation: '$(Agent.TempDirectory)/TestResults/**/coverage.cobertura.xml'
+
+  # ── Stage: Docker Build & Push ───────────────────────────────
+  - stage: Docker
+    displayName: 'Build & Push Purchases Image'
+    dependsOn: Test
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
+    jobs:
+      - job: DockerBuildPush
+        displayName: 'Build and Push Docker Image'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: Docker@2
+            displayName: 'Login to ACR'
+            inputs:
+              command: login
+              containerRegistry: 'AzureContainerRegistry'
+
+          - task: Docker@2
+            displayName: 'Build and Push Purchases API image'
+            inputs:
+              command: buildAndPush
+              containerRegistry: 'AzureContainerRegistry'
+              repository: '$(purchasesImageRepository)'
+              dockerfile: 'src/Services/Purchases/UnderworldAPI.Purchases.API/Dockerfile'
+              buildContext: '.'
+              tags: |
+                $(imageTag)
+                latest
+
+  # ── Stage: Deploy ─────────────────────────────────────────────
+  - stage: Deploy
+    displayName: 'Deploy Purchases API to Azure'
+    dependsOn: Docker
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: DeployToContainerApps
+        displayName: 'Deploy to Azure Container Apps'
+        environment: 'production-purchases'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureContainerApps@1
+                  displayName: 'Deploy Purchases API'
+                  inputs:
+                    azureSubscription: 'AzureServiceConnection'
+                    containerAppName: 'underworld-purchases-api'
+                    resourceGroup: 'rg-underworld-prod'
+                    imageToDeploy: '$(containerRegistry)/$(purchasesImageRepository):$(imageTag)'
