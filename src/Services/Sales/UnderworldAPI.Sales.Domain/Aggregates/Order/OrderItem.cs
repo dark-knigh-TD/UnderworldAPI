@@ -15,7 +15,7 @@ public sealed class OrderItem:Entity
     
     public Money Total => UnitPrice.Multiply(Quantity);
 
-    // Constructores
+    // Constructors
     private OrderItem() { } // EF Core
     private OrderItem(Guid id, Guid orderId,Guid productId, string productName, 
           Money unitPrice, int quantity):base(id)

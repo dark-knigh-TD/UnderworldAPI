@@ -47,7 +47,7 @@ public class Money:ValueObject
         return new Money(Amount * quantity, Currency);
     }
 
-    public static Money Zero(string currency) => new Money(0, currency);
+    public static Money Zero(string currency = "MXN") => new(0, currency);
 
     protected override IEnumerable<object> GetAtomicValues()
     {
