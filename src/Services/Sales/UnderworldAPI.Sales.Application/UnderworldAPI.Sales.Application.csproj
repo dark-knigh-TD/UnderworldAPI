@@ -11,6 +11,18 @@
     <PackageReference Include="MediatR" Version="14.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Abstractions/" />
+    <Folder Include="DependencyInjection/" />
+    <Folder Include="DTOs/" />
+    <Folder Include="Mappings/" />
+    <Folder Include="Orders/Commands/CreateOrder/" />
+    <Folder Include="Orders/Commands/DeleteOrder/" />
+    <Folder Include="Orders/Queries/" />
+    <Folder Include="Orders/Queries/GetAllOrders/" />
+    <Folder Include="Orders/Queries/GetOrderById/" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
