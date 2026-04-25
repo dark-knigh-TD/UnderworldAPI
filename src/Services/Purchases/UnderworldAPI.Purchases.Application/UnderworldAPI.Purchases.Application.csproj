@@ -11,6 +11,19 @@
     <PackageReference Include="MediatR" Version="14.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Behaviors/" />
+    <Folder Include="DependencyInjection/" />
+    <Folder Include="DTOs/" />
+    <Folder Include="Mappings/" />
+    <Folder Include="PurchaseOrders/Commands/" />
+    <Folder Include="PurchaseOrders/Commands/CreatePurchaseOrder/" />
+    <Folder Include="PurchaseOrders/Commands/DeletePurchaseOrder/" />
+    <Folder Include="PurchaseOrders/Commands/UpdatePurchaseOrder/" />
+    <Folder Include="PurchaseOrders/Queries/GetAllPurchaseOrders/" />
+    <Folder Include="PurchaseOrders/Queries/GetPurchaseOrderById/" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
