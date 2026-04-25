@@ -21,7 +21,8 @@ public static class ApplicationServiceExtensions
         services.AddValidatorsFromAssembly(assembly);
         //TODO revisar este codigo no complia
         //services.AddAutoMapper(assembly);
-
+         services.AddAutoMapper(cfg => cfg.AddMaps(assembly));
+         
         return services;
 
     }

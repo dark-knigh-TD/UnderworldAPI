@@ -1,8 +1,0 @@
-using System;
-
-namespace UnderworldAPI.Purchases.Application.PurchaseOrders.Queries.GetAllPurchaseOrders;
-
-public class GetAllPurchaseOrdersQuery
-{
-
-}
