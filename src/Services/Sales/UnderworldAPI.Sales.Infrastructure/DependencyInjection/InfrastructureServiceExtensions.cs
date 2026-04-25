@@ -1,0 +1,55 @@
+using System;
+using Azure.Messaging.ServiceBus;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using UnderworldAPI.Sales.Application.Abstractions;
+using UnderworldAPI.Sales.Domain.Ports.Repositories;
+using UnderworldAPI.Sales.Infrastructure.Messaging;
+using UnderworldAPI.Sales.Infrastructure.Persistence;
+using UnderworldAPI.Sales.Infrastructure.Persistence.Repositories;
+
+namespace UnderworldAPI.Sales.Infrastructure.DependencyInjection;
+
+public static class InfrastructureServiceExtensions
+{
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Aquí registraríamos servicios específicos de la infraestructura, como repositorios, clientes de mensajería, etc.
+        // Por ejemplo:
+        // services.AddScoped<IOrderRepository, OrderRepository>();
+        // services.AddSingleton<IEventPublisher, AzureServiceBusPublisher>();
+
+        // ── EF Core — SQL Server ──────────────────────────────
+        services.AddDbContext<SalesDbContext>(options =>
+            options.UseSqlServer(
+                configuration.GetConnectionString("SalesDb"),
+                sqlOptions =>
+                {
+                    // Retry automático en fallos transitorios de Azure SQL
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorNumbersToAdd: null);
+
+                    // Timeout de migración
+                    sqlOptions.CommandTimeout(60);
+                }));
+
+        // ── IUnitOfWork → SalesDbContext ──────────────────────
+        // SalesDbContext implementa IUnitOfWork — misma instancia por request (Scoped)
+        services.AddScoped<IUnitOfWork>(sp =>
+            sp.GetRequiredService<SalesDbContext>());
+
+        // ── Repositories ──────────────────────────────────────
+        services.AddScoped<IOrderRepository, OrderRepository>();
+
+        // ── Azure Service Bus ─────────────────────────────────
+        services.AddSingleton(sp =>
+            new ServiceBusClient(configuration["AzureServiceBus:ConnectionString"]));
+
+        services.AddScoped<IEventPublisher, AzureServiceBusPublisher>();
+
+        return services;
+    }
+}
