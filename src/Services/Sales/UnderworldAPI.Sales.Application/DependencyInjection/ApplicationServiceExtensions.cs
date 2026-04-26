@@ -8,7 +8,7 @@ namespace UnderworldAPI.Sales.Application.DependencyInjection;
 
 public static class ApplicationServiceExtensions
 {
-    public static IServiceCollection ApplicationServices(this IServiceCollection services)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         var assembly = typeof(ApplicationServiceExtensions).Assembly;
 

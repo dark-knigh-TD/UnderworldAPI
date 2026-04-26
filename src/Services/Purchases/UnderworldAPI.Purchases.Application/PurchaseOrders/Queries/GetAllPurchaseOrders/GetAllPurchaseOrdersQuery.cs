@@ -5,6 +5,6 @@ using UnderworldAPI.Shared.Domain.Results;
 
 namespace UnderworldAPI.Purchases.Application.PurchaseOrders.Queries.GetAllPurchaseOrders;
 
-sealed record GetAllPurchaseOrdersQuery()
+public sealed record GetAllPurchaseOrdersQuery()
     : IRequest<Result<IEnumerable<PurchaseOrderDto>>>;
 
