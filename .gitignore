@@ -4,7 +4,11 @@
 ## Get latest from `dotnet new gitignore`
 
 # dotenv files
+# Environment variables — nunca subir a git
 .env
+.env.local
+.env.production
+!.env.example    # este sí sube — es la plantilla sin valores
 
 # User-specific files
 *.rsuser

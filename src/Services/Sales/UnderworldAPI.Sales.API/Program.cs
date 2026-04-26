@@ -4,6 +4,7 @@ using UnderworldAPI.Sales.Infrastructure.Persistence;
 using UnderworldAPI.Sales.Infrastructure.DependencyInjection;
 using UnderworldAPI.Sales.Application.DependencyInjection;
 using Scalar.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,9 +40,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
+// Health check endpoint — Azure Container Apps lo llama periódicamente
+app.MapHealthChecks("/health");
+
+// Aplicar migrations automáticamente al arrancar — útil en desarrollo
+// En producción esto se maneja con el pipeline de CI/CD
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
 app.Run();
