@@ -54,7 +54,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=${SQL_SA_PASSWORD}
+      - SA_PASSWORD=${SQL_SA_PASSWORD}  # lee del .env
       - MSSQL_PID=Developer
     networks:
       - underworld-network

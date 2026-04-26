@@ -18,9 +18,9 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<SalesDbContext>("sales-db");
     
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// builder.Services.AddControllers();
+// // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
