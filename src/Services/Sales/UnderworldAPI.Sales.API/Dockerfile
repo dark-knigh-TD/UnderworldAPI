@@ -24,10 +24,6 @@ RUN dotnet publish src/Services/Sales/UnderworldAPI.Sales.API/UnderworldAPI.Sale
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# Non-root user — security best practice
-RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
-USER appuser
-
 COPY --from=build /app/publish .
 
 EXPOSE 8080

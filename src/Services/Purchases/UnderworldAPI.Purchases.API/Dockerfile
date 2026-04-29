@@ -25,10 +25,6 @@ RUN dotnet publish src/Services/Purchases/UnderworldAPI.Purchases.API/Underworld
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# Non-root user — security best practice en Azure Container Apps
-RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
-USER appuser
-
 COPY --from=build /app/publish .
 
 EXPOSE 8080
