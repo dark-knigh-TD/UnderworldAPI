@@ -2,13 +2,13 @@ using System;
 
 namespace UnderworldAPI.Purchases.Application.DTOs;
 
-public sealed record PurchaseOrderItemDto(
-    Guid Id,
-    Guid ProductId,
-    string ProductName,
-    decimal UnitPrice,
-    string Currency,
-    int Quantity,
-    int? ReceivedQuantity,
-    decimal Total
-);
+public sealed record PurchaseOrderItemDto{
+    public Guid Id { get; init; }
+    public Guid ProductId { get; init; }
+    public string ProductName { get; init; } = string.Empty;
+    public decimal UnitPrice { get; init; }
+    public string Currency { get; init; } = string.Empty;
+    public int Quantity { get; init; }
+    public int? ReceivedQuantity { get; init; }
+    public decimal Total { get; init; }
+}
