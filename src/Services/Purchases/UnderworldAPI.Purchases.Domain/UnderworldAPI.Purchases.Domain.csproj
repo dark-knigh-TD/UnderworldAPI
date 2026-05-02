@@ -4,6 +4,16 @@
     <ProjectReference Include="..\..\..\Shared\UnderworldAPI.Shared.Domain\UnderworldAPI.Shared.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Aggregates/" />
+    <Folder Include="Aggregates/PurchaseOrder/" />
+    <Folder Include="Events/" />
+    <Folder Include="Exceptions/" />
+    <Folder Include="Ports/" />
+    <Folder Include="Ports/Repositories/" />
+    <Folder Include="ValueObjects/" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

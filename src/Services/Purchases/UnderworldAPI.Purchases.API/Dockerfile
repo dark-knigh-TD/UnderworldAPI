@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy solution and restore — leverages Docker layer cache
 # Each COPY is granular so cache only invalidates when that .csproj changes
-COPY *.sln ./
+COPY *.slnx ./
 COPY src/Shared/UnderworldAPI.Shared.Domain/*.csproj ./src/Shared/UnderworldAPI.Shared.Domain/
 COPY src/Shared/UnderworldAPI.Shared.Infrastructure/*.csproj ./src/Shared/UnderworldAPI.Shared.Infrastructure/
 COPY src/Services/Purchases/UnderworldAPI.Purchases.Domain/*.csproj ./src/Services/Purchases/UnderworldAPI.Purchases.Domain/
@@ -24,10 +24,6 @@ RUN dotnet publish src/Services/Purchases/UnderworldAPI.Purchases.API/Underworld
 # ── Stage 2: Runtime ─────────────────────────────────────────────
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
-
-# Non-root user — security best practice en Azure Container Apps
-RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
-USER appuser
 
 COPY --from=build /app/publish .
 
