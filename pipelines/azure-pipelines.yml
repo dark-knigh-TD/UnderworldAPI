@@ -97,11 +97,14 @@ stages:
           - script: |
               echo "##vso[task.prependpath]/usr/local/bin"
               echo "##vso[task.prependpath]/opt/homebrew/bin"
+              echo "##vso[task.prependpath]$HOME/.docker/cli-plugins"
             displayName: 'Add tools to PATH'
 
-          # ── Verificar Docker ─────────────────────────────────
-          - script: docker --version
-            displayName: 'Verify Docker'
+          # ── Verificar Docker y buildx ─────────────────────────
+          - script: |
+              docker --version
+              ~/.docker/cli-plugins/docker-buildx version
+            displayName: 'Verify Docker and Buildx'
 
           # ── Login ACR ────────────────────────────────────────
           - task: Docker@2
@@ -110,15 +113,9 @@ stages:
               command: login
               containerRegistry: 'ACR-UnderworldAPI'
 
-          # ── Setup buildx para linux/amd64 ────────────────────
-          - script: |
-              ddocker buildx version
-              docker buildx ls
-            displayName: 'Setup Docker Buildx'
-
           # ── Build & Push Sales API (linux/amd64) ─────────────
           - script: |
-              docker buildx build \
+              ~/.docker/cli-plugins/docker-buildx build \
                 --platform linux/amd64 \
                 --push \
                 -t $(containerRegistry)/underworld-sales-api:$(imageTag) \
@@ -129,7 +126,7 @@ stages:
 
           # ── Build & Push Purchases API (linux/amd64) ─────────
           - script: |
-              docker buildx build \
+              ~/.docker/cli-plugins/docker-buildx build \
                 --platform linux/amd64 \
                 --push \
                 -t $(containerRegistry)/underworld-purchases-api:$(imageTag) \
