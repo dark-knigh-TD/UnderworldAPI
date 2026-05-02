@@ -93,7 +93,7 @@ stages:
         pool:
           name: Default
         steps:
-          # ── Agregar Docker al PATH ───────────────────────────
+          # ── Agregar tools al PATH ────────────────────────────
           - script: |
               echo "##vso[task.prependpath]/usr/local/bin"
               echo "##vso[task.prependpath]/opt/homebrew/bin"
@@ -110,31 +110,33 @@ stages:
               command: login
               containerRegistry: 'ACR-UnderworldAPI'
 
-          # ── Build & Push Sales API ───────────────────────────
-          - task: Docker@2
-            displayName: 'Build and Push Sales API'
-            inputs:
-              command: buildAndPush
-              containerRegistry: 'ACR-UnderworldAPI'
-              repository: 'underworld-sales-api'
-              dockerfile: '$(Build.SourcesDirectory)/src/Services/Sales/UnderworldAPI.Sales.API/Dockerfile'
-              buildContext: '$(Build.SourcesDirectory)'
-              tags: |
-                $(imageTag)
-                latest
+          # ── Setup buildx para linux/amd64 ────────────────────
+          - script: |
+              docker buildx create --use --name multiplatform-builder || true
+              docker buildx inspect --bootstrap
+            displayName: 'Setup Docker Buildx'
 
-          # ── Build & Push Purchases API ───────────────────────
-          - task: Docker@2
-            displayName: 'Build and Push Purchases API'
-            inputs:
-              command: buildAndPush
-              containerRegistry: 'ACR-UnderworldAPI'
-              repository: 'underworld-purchases-api'
-              dockerfile: '$(Build.SourcesDirectory)/src/Services/Purchases/UnderworldAPI.Purchases.API/Dockerfile'
-              buildContext: '$(Build.SourcesDirectory)'
-              tags: |
-                $(imageTag)
-                latest
+          # ── Build & Push Sales API (linux/amd64) ─────────────
+          - script: |
+              docker buildx build \
+                --platform linux/amd64 \
+                --push \
+                -t $(containerRegistry)/underworld-sales-api:$(imageTag) \
+                -t $(containerRegistry)/underworld-sales-api:latest \
+                -f $(Build.SourcesDirectory)/src/Services/Sales/UnderworldAPI.Sales.API/Dockerfile \
+                $(Build.SourcesDirectory)
+            displayName: 'Build and Push Sales API (amd64)'
+
+          # ── Build & Push Purchases API (linux/amd64) ─────────
+          - script: |
+              docker buildx build \
+                --platform linux/amd64 \
+                --push \
+                -t $(containerRegistry)/underworld-purchases-api:$(imageTag) \
+                -t $(containerRegistry)/underworld-purchases-api:latest \
+                -f $(Build.SourcesDirectory)/src/Services/Purchases/UnderworldAPI.Purchases.API/Dockerfile \
+                $(Build.SourcesDirectory)
+            displayName: 'Build and Push Purchases API (amd64)'
 
   # ── Stage: Deploy ─────────────────────────────────────────────
   - stage: Deploy
@@ -151,7 +153,7 @@ stages:
           runOnce:
             deploy:
               steps:
-                # ── Agregar az y docker al PATH ───────────────
+                # ── Agregar az y tools al PATH ────────────────
                 - script: |
                     echo "##vso[task.prependpath]/opt/homebrew/bin"
                     echo "##vso[task.prependpath]/usr/local/bin"
