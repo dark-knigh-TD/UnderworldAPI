@@ -93,20 +93,11 @@ stages:
         pool:
           name: Default
         steps:
-          # ── Debug paths ─────────────────────────────────────
-          - script: |
-              echo "SourcesDirectory: $(Build.SourcesDirectory)"
-              echo "DefaultWorkingDirectory: $(System.DefaultWorkingDirectory)"
-              echo "--- Contenido SourcesDirectory ---"
-              ls $(Build.SourcesDirectory)
-              echo "--- Buscando .sln ---"
-              find $(Build.SourcesDirectory) -name "*.sln" 2>/dev/null
-            displayName: 'Debug paths'
-
-          # ── Docker PATH ──────────────────────────────────────
+          # ── Agregar Docker al PATH ───────────────────────────
           - script: |
               echo "##vso[task.prependpath]/usr/local/bin"
-            displayName: 'Add Docker to PATH'
+              echo "##vso[task.prependpath]/opt/homebrew/bin"
+            displayName: 'Add tools to PATH'
 
           # ── Verificar Docker ─────────────────────────────────
           - script: docker --version
@@ -160,6 +151,16 @@ stages:
           runOnce:
             deploy:
               steps:
+                # ── Agregar az y docker al PATH ───────────────
+                - script: |
+                    echo "##vso[task.prependpath]/opt/homebrew/bin"
+                    echo "##vso[task.prependpath]/usr/local/bin"
+                  displayName: 'Add tools to PATH'
+
+                # ── Verificar az ──────────────────────────────
+                - script: az --version
+                  displayName: 'Verify Azure CLI'
+
                 # ── Deploy Sales API ──────────────────────────
                 - task: AzureCLI@2
                   displayName: 'Deploy Sales API to Container Apps'
