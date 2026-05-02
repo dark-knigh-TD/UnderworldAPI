@@ -20,7 +20,7 @@ stages:
       - job: BuildAndTest
         displayName: 'Build and Test'
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: Default  #'ubuntu-latest'
         steps:
           - task: UseDotNet@2
             displayName: 'Use .NET 10'
@@ -97,7 +97,7 @@ stages:
       - job: BuildPushImages
         displayName: 'Build and Push Docker Images'
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: Default #'ubuntu-latest'
         steps:
           - task: Docker@2
             displayName: 'Login to ACR'
@@ -139,7 +139,7 @@ stages:
         displayName: 'Deploy to Container Apps'
         environment: 'production'
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: Default #'ubuntu-latest'
         strategy:
           runOnce:
             deploy:
