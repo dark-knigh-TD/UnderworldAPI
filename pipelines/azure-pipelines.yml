@@ -111,8 +111,8 @@ stages:
               command: buildAndPush
               containerRegistry: 'ACR-UnderworldAPI'
               repository: 'underworld-sales-api'
-              dockerfile: 'src/Services/Sales/UnderworldAPI.Sales.API/Dockerfile'
-              buildContext: '.'
+              dockerfile: '$(Build.SourcesDirectory)/src/Services/Sales/UnderworldAPI.Sales.API/Dockerfile'
+              buildContext: '$(Build.SourcesDirectory)'
               tags: |
                 $(imageTag)
                 latest
@@ -123,8 +123,8 @@ stages:
               command: buildAndPush
               containerRegistry: 'ACR-UnderworldAPI'
               repository: 'underworld-purchases-api'
-              dockerfile: 'src/Services/Purchases/UnderworldAPI.Purchases.API/Dockerfile'
-              buildContext: '.'
+              dockerfile: '$(Build.SourcesDirectory)/src/Services/Purchases/UnderworldAPI.Purchases.API/Dockerfile'
+              buildContext: '$(Build.SourcesDirectory)'
               tags: |
                 $(imageTag)
                 latest
