@@ -112,8 +112,8 @@ stages:
 
           # ── Setup buildx para linux/amd64 ────────────────────
           - script: |
-              docker buildx create --use --name multiplatform-builder || true
-              docker buildx inspect --bootstrap
+              ddocker buildx version
+              docker buildx ls
             displayName: 'Setup Docker Buildx'
 
           # ── Build & Push Sales API (linux/amd64) ─────────────
