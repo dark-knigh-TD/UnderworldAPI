@@ -15,8 +15,8 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 
 // Health checks — requerido por Azure Container Apps para saber si el contenedor está vivo
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<SalesDbContext>("sales-db");
+builder.Services.AddHealthChecks();
+    //.AddDbContextCheck<SalesDbContext>("sales-db");
     
 // builder.Services.AddControllers();
 // // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

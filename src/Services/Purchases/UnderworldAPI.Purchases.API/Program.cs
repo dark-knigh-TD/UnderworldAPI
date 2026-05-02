@@ -18,8 +18,8 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 // // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 // builder.Services.AddOpenApi();
 
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<PurchasesDbContext>("purchases-db");
+builder.Services.AddHealthChecks();
+    //.AddDbContextCheck<PurchasesDbContext>("purchases-db");
     
 var app = builder.Build();
 
