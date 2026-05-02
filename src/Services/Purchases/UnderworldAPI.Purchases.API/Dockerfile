@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy solution and restore — leverages Docker layer cache
 # Each COPY is granular so cache only invalidates when that .csproj changes
-COPY *.sln ./
+COPY *.slnx ./
 COPY src/Shared/UnderworldAPI.Shared.Domain/*.csproj ./src/Shared/UnderworldAPI.Shared.Domain/
 COPY src/Shared/UnderworldAPI.Shared.Infrastructure/*.csproj ./src/Shared/UnderworldAPI.Shared.Infrastructure/
 COPY src/Services/Purchases/UnderworldAPI.Purchases.Domain/*.csproj ./src/Services/Purchases/UnderworldAPI.Purchases.Domain/

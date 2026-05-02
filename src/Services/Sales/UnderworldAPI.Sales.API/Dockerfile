@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /app
 
 # Copy solution and restore — leverages Docker layer cache
-COPY *.sln ./
+COPY *.slnx ./
 COPY src/Shared/UnderworldAPI.Shared.Domain/*.csproj ./src/Shared/UnderworldAPI.Shared.Domain/
 COPY src/Shared/UnderworldAPI.Shared.Infrastructure/*.csproj ./src/Shared/UnderworldAPI.Shared.Infrastructure/
 COPY src/Services/Sales/UnderworldAPI.Sales.Domain/*.csproj ./src/Services/Sales/UnderworldAPI.Sales.Domain/
