@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using UnderworldAPI.Purchases.API.DependencyInjection;
@@ -7,6 +8,16 @@ using UnderworldAPI.Purchases.Infrastructure.DependencyInjection;
 using UnderworldAPI.Purchases.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ── Key Vault — solo en producción ───────────────────────────
+if (builder.Environment.IsProduction())
+{
+    var keyVaultUri = new Uri("https://underworld-kv.vault.azure.net/");
+
+    builder.Configuration.AddAzureKeyVault(
+        keyVaultUri,
+        new DefaultAzureCredential());
+}
 
 
 // ── Services ──────────────────────────────────────────────────

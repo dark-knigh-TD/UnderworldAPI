@@ -20,10 +20,15 @@ public static class InfrastructureServiceExtensions
         // services.AddScoped<IOrderRepository, OrderRepository>();
         // services.AddSingleton<IEventPublisher, AzureServiceBusPublisher>();
 
+        // En desarrollo lee de appsettings.Development.json
+        // En producción lee de Key Vault automáticamente
+        var salesDbConnection = configuration["SalesDbConnectionString"]
+        ?? configuration.GetConnectionString("SalesDb");
+
         // ── EF Core — SQL Server ──────────────────────────────
         services.AddDbContext<SalesDbContext>(options =>
             options.UseSqlServer(
-                configuration.GetConnectionString("SalesDb"),
+                salesDbConnection,
                 sqlOptions =>
                 {
                     // Retry automático en fallos transitorios de Azure SQL

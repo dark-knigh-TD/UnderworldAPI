@@ -5,8 +5,23 @@ using UnderworldAPI.Sales.Infrastructure.DependencyInjection;
 using UnderworldAPI.Sales.Application.DependencyInjection;
 using Scalar.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ── Key Vault — solo en producción ───────────────────────────
+// En desarrollo usa appsettings.Development.json
+// En producción lee secrets del Key Vault con Managed Identity
+if (builder.Environment.IsProduction())
+{
+    var keyVaultUri = new Uri("https://underworld-kv.vault.azure.net/");
+
+    // DefaultAzureCredential usa Managed Identity automáticamente en Azure
+    // En local usa az login credentials
+    builder.Configuration.AddAzureKeyVault(
+        keyVaultUri,
+        new DefaultAzureCredential());
+}
 
 // ── Services ──────────────────────────────────────────────────
 builder.Services.AddApiServices();
@@ -42,7 +57,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-
 // Health check endpoint — Azure Container Apps lo llama periódicamente
 app.MapHealthChecks("/health");
 

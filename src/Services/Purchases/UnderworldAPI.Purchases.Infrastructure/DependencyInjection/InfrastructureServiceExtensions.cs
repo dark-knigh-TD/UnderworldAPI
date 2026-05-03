@@ -17,10 +17,14 @@ public static class InfrastructureServiceExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
+
+        var purchasesDbConnection = configuration["PurchasesDbConnectionString"]
+        ?? configuration.GetConnectionString("PurchasesDb");
+
         // ── EF Core — SQL Server ──────────────────────────────
         services.AddDbContext<PurchasesDbContext>(options =>
             options.UseSqlServer(
-                configuration.GetConnectionString("PurchasesDb"),
+                purchasesDbConnection,
                 sqlOptions =>
                 {
                     sqlOptions.EnableRetryOnFailure(
