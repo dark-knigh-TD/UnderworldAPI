@@ -12,15 +12,20 @@ var builder = WebApplication.CreateBuilder(args);
 // ── Key Vault — solo en producción ───────────────────────────
 // En desarrollo usa appsettings.Development.json
 // En producción lee secrets del Key Vault con Managed Identity
-if (builder.Environment.IsProduction())
+// ── Key Vault ─────────────────────────────────────────────────
+var keyVaultUri = Environment.GetEnvironmentVariable("AZURE_KEYVAULT_URI");
+if (!string.IsNullOrEmpty(keyVaultUri))
 {
-    var keyVaultUri = new Uri("https://underworld-kv.vault.azure.net/");
-
-    // DefaultAzureCredential usa Managed Identity automáticamente en Azure
-    // En local usa az login credentials
     builder.Configuration.AddAzureKeyVault(
-        keyVaultUri,
-        new DefaultAzureCredential());
+        new Uri(keyVaultUri),
+        new DefaultAzureCredential(new DefaultAzureCredentialOptions
+        {
+            ExcludeVisualStudioCredential = true,
+            ExcludeVisualStudioCodeCredential = true,
+            ExcludeAzurePowerShellCredential = true,
+            ExcludeInteractiveBrowserCredential = true,
+            ExcludeAzureCliCredential = false
+        }));
 }
 
 // ── Services ──────────────────────────────────────────────────
@@ -28,6 +33,8 @@ builder.Services.AddApiServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
+// ── JWT — se agrega después de Key Vault para que lea JwtSecretKey ──
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 // Health checks — requerido por Azure Container Apps para saber si el contenedor está vivo
 builder.Services.AddHealthChecks();
@@ -55,6 +62,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication(); //  antes de Authorization
 app.UseAuthorization();
 app.MapControllers();
 // Health check endpoint — Azure Container Apps lo llama periódicamente

@@ -8,6 +8,8 @@ using UnderworldAPI.Purchases.Domain.Ports.Repositories;
 using UnderworldAPI.Purchases.Infrastructure.Messaging;
 using UnderworldAPI.Purchases.Infrastructure.Persistence;
 using UnderworldAPI.Purchases.Infrastructure.Persistence.Repositories;
+using UnderworldAPI.Sales.Infrastructure.Auth;
+using UnderworldAPI.Shared.Domain.Auth;
 
 namespace UnderworldAPI.Purchases.Infrastructure.DependencyInjection;
 
@@ -47,6 +49,9 @@ public static class InfrastructureServiceExtensions
             new ServiceBusClient(configuration["AzureServiceBus:ConnectionString"]));
 
         services.AddScoped<IEventPublisher, AzureServiceBusPublisher>();
+
+        // ── Auth ──────────────────────────────────────────────────────
+        services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 
         return services;
     }

@@ -19,6 +19,9 @@ if (builder.Environment.IsProduction())
         new DefaultAzureCredential());
 }
 
+// ── JWT — se agrega después de Key Vault para que lea JwtSecretKey ──
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
 
 // ── Services ──────────────────────────────────────────────────
 builder.Services.AddApiServices();
@@ -48,6 +51,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication(); // ← antes de Authorization
 app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");

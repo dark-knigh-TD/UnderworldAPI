@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UnderworldAPI.Sales.Application.Orders.Commands.CreateOrder;
@@ -13,6 +14,7 @@ namespace UnderworldAPI.Sales.API.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/orders")]
+    [Authorize] // Requiere autenticación token para todas las acciones
     public sealed class OrdersController (ISender mediator) : ControllerBase
     {
         // GET api/v1/orders
@@ -75,6 +77,7 @@ namespace UnderworldAPI.Sales.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             var result = await mediator.Send(new DeleteOrderCommand(id), cancellationToken);
