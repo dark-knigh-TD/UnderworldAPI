@@ -12,10 +12,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Auth/" />
     <Folder Include="DependencyInjection/" />
     <Folder Include="Messaging/" />
     <Folder Include="Persistence/Configurations/" />

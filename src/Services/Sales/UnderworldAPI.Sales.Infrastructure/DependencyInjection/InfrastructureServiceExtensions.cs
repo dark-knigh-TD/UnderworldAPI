@@ -5,9 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UnderworldAPI.Sales.Application.Abstractions;
 using UnderworldAPI.Sales.Domain.Ports.Repositories;
+using UnderworldAPI.Sales.Infrastructure.Auth;
 using UnderworldAPI.Sales.Infrastructure.Messaging;
 using UnderworldAPI.Sales.Infrastructure.Persistence;
 using UnderworldAPI.Sales.Infrastructure.Persistence.Repositories;
+using UnderworldAPI.Shared.Domain.Auth;
 
 namespace UnderworldAPI.Sales.Infrastructure.DependencyInjection;
 
@@ -54,6 +56,9 @@ public static class InfrastructureServiceExtensions
             new ServiceBusClient(configuration["AzureServiceBus:ConnectionString"]));
 
         services.AddScoped<IEventPublisher, AzureServiceBusPublisher>();
+
+        // ── Auth ──────────────────────────────────────────────────────
+        services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 
         return services;
     }

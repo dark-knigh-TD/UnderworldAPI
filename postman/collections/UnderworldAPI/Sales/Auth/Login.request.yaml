@@ -1,0 +1,12 @@
+$kind: http-request
+name: Login
+url: "{{host}}/api/v1/auth/login"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "email": "admin@underworld.com",
+        "password": "Admin123!"
+      }
+order: 1778202728345

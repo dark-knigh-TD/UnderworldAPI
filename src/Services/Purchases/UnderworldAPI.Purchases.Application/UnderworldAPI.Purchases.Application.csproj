@@ -12,6 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Auth/" />
+    <Folder Include="Auth/Commands/" />
+    <Folder Include="Auth/Commands/Login/" />
     <Folder Include="Behaviors/" />
     <Folder Include="DependencyInjection/" />
     <Folder Include="DTOs/" />

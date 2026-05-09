@@ -1,6 +1,9 @@
 using System;
+using System.Text;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace UnderworldAPI.Sales.API.DependencyInjection;
 
@@ -31,6 +34,42 @@ public static class ApiServiceExtensions
 
         // OpenAPI nativo .NET 10
         services.AddOpenApi();
+
+        return services;
+    }
+
+    // Método separado para JWT — se llama desde Program.cs después de build
+    // porque necesita IConfiguration que ya tiene los secrets de Key Vault
+    public static IServiceCollection AddJwtAuthentication(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var secretKey = configuration["JwtSecretKey"]
+            ?? configuration["Jwt:SecretKey"]
+            ?? throw new InvalidOperationException("JWT Secret Key not configured.");
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = configuration["Jwt:Issuer"] ?? "UnderworldAPI",
+                ValidAudience = configuration["Jwt:Audience"] ?? "UnderworldAPI.Client",
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(secretKey)),
+                ClockSkew = TimeSpan.Zero
+            };
+        });
+
+        services.AddAuthorization();
 
         return services;
     }

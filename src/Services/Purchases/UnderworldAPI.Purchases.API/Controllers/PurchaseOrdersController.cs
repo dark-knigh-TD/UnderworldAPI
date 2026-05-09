@@ -1,6 +1,7 @@
 using System;
 using Asp.Versioning;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UnderworldAPI.Purchases.Application.PurchaseOrders.Commands.CreatePurchaseOrder;
 using UnderworldAPI.Purchases.Application.PurchaseOrders.Commands.DeletePurchaseOrder;
@@ -13,6 +14,7 @@ namespace UnderworldAPI.Purchases.API.Controllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/purchase-orders")]
+[Authorize] 
 public sealed class PurchaseOrdersController(ISender mediator) : ControllerBase
 {
      // GET api/v1/purchase-orders
@@ -79,6 +81,7 @@ public sealed class PurchaseOrdersController(ISender mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(
