@@ -11,6 +11,11 @@
     <PackageReference Include="MediatR" Version="14.1.0" />
   </ItemGroup>
 
+  <!-- Permite que el proyecto de tests vea los tipos internal -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="UnderworldAPI.Purchases.Application.Tests" />
+  </ItemGroup>
+
   <ItemGroup>
     <Folder Include="Auth/" />
     <Folder Include="Auth/Commands/" />

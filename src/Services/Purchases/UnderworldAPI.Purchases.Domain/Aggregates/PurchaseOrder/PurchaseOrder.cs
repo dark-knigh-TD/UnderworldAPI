@@ -17,14 +17,13 @@ public sealed class PurchaseOrder:AggregateRoot
     public string? Notes { get; private set; }
     public IReadOnlyCollection<PurchaseOrderItem> Items => _items.AsReadOnly();
 
-    public Money TotalAmount => _items.Aggregate(Money.Create(0, "USD").Value, (total, item) => total.Add(item.TotalPrice));
-
+  
     //TODO: Si queremos soportar múltiples monedas, tendríamos que cambiar la propiedad TotalAmount para devolver un diccionario de moneda a monto total, o una lista de objetos que representen el total por moneda. Por ahora, asumimos que todas las líneas de pedido usan la misma moneda y devolvemos un solo total.
-    // public Money TotalAmount => _items.Count == 0
-    //     ? Money.Zero()
-    //     : _items.Skip(1).Aggregate(
-    //         _items[0].Total,
-    //         (acc, item) => acc.Add(item.Total));
+    public Money TotalAmount => _items.Count == 0
+    ? Money.Create(0m, "MXN").Value
+    : _items.Skip(1).Aggregate(
+        _items[0].UnitPrice.Multiply(_items[0].Quantity),
+        (acc, item) => acc.Add(item.UnitPrice.Multiply(item.Quantity)));
 
     private PurchaseOrder() { }
     private PurchaseOrder(Guid id, SupplierId supplierId, string? notes = null)
@@ -129,7 +128,7 @@ public sealed class PurchaseOrder:AggregateRoot
 
         Status = PurchaseOrderStatus.Cancelled;
         UpdatedAt = DateTime.UtcNow;
-        RaiseDomainEvent(new PurchaseOrderUpdatedEvent(Id, SupplierId.Value, UpdatedAt.Value));
+        RaiseDomainEvent(new PurchaseOrderCancelledEvent(Id, SupplierId.Value, UpdatedAt.Value));
         return Result.Success();
     }   
 }
