@@ -14,10 +14,16 @@ public sealed class OrderMappingProfile:Profile
                 opt => opt.MapFrom(src => src.CustomerId.Value))
             .ForMember(dest => dest.Status,
                 opt => opt.MapFrom(src => src.Status.ToString()))
-            .ForMember(dest => dest.TotalAmount,
-                opt => opt.MapFrom(src => src.TotalAmount.Amount))
-            .ForMember(dest => dest.Currency,
-                opt => opt.MapFrom(src => src.TotalAmount.Currency));
+             .ForMember(dest => dest.TotalAmount,
+        opt => opt.MapFrom(src =>
+            src.Items.Any()
+                ? src.Items.Sum(i => i.UnitPrice.Amount * i.Quantity)
+                : 0m))
+    .ForMember(dest => dest.Currency,
+        opt => opt.MapFrom(src =>
+            src.Items.Any()
+                ? src.Items.First().UnitPrice.Currency
+                : string.Empty));
 
         CreateMap<OrderItem, OrderItemDto>()
             .ForMember(dest => dest.UnitPrice,
