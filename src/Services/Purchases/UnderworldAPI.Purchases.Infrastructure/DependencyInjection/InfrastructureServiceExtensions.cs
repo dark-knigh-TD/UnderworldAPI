@@ -53,6 +53,10 @@ public static class InfrastructureServiceExtensions
         // ── Auth ──────────────────────────────────────────────────────
         services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 
+          // ── Background Service — Consumer de sales-events ─────
+        // Singleton porque BackgroundService debe ser Singleton
+        services.AddHostedService<SalesEventsConsumer>();
+
         return services;
     }
 }

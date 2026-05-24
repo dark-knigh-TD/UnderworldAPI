@@ -4,6 +4,7 @@ using UnderworldAPI.Sales.Application.Abstractions;
 using UnderworldAPI.Sales.Application.Orders.Commands.CreateOrder;
 using UnderworldAPI.Sales.Domain.Aggregates.Order;
 using UnderworldAPI.Sales.Domain.Ports.Repositories;
+using UnderworldAPI.Shared.Domain.IntegrationEvents;
 
 namespace UnderworldAPI.Sales.Application.Tests.Orders.Commands;
 
@@ -11,6 +12,7 @@ public class CreateOrderCommandHandlerTests
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IIntegrationEventPublisher _integrationEventPublisher;
     private readonly CreateOrderCommandHandler _handler;
 
     public CreateOrderCommandHandlerTests()
@@ -18,7 +20,8 @@ public class CreateOrderCommandHandlerTests
         // NSubstitute crea mocks automáticamente
         _orderRepository = Substitute.For<IOrderRepository>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
-        _handler = new CreateOrderCommandHandler(_orderRepository, _unitOfWork);
+        _integrationEventPublisher = Substitute.For<IIntegrationEventPublisher>();
+        _handler = new CreateOrderCommandHandler(_orderRepository, _unitOfWork,_integrationEventPublisher);
     }
 
     [Fact]
@@ -48,6 +51,12 @@ public class CreateOrderCommandHandlerTests
             Arg.Any<CancellationToken>());
 
         await _unitOfWork.Received(1).SaveChangesAsync(
+            Arg.Any<CancellationToken>());
+
+            // Verifica que se publicó el integration event
+            await _integrationEventPublisher.Received(1)
+        .PublishOrderCreatedAsync(
+            Arg.Any<OrderCreatedIntegrationEvent>(),
             Arg.Any<CancellationToken>());
     }
 

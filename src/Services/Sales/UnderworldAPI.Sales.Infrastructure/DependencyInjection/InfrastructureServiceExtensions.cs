@@ -52,13 +52,20 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IOrderRepository, OrderRepository>();
 
         // ── Azure Service Bus ─────────────────────────────────
+        var serviceBusConnection = configuration["ServiceBusConnectionString"]
+            ?? configuration["AzureServiceBus:ConnectionString"];
+
         services.AddSingleton(sp =>
-            new ServiceBusClient(configuration["AzureServiceBus:ConnectionString"]));
+            new ServiceBusClient(serviceBusConnection));
 
         services.AddScoped<IEventPublisher, AzureServiceBusPublisher>();
 
         // ── Auth ──────────────────────────────────────────────────────
         services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
+
+        // ── Integration Events ────────────────────────────────
+        services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+
 
         return services;
     }
