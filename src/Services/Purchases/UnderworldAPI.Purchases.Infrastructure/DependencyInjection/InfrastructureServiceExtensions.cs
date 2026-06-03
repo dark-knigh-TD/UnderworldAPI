@@ -45,8 +45,17 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
 
         // ── Azure Service Bus ─────────────────────────────────
+        var serviceBusConnection = configuration["ServiceBusConnectionString"]
+            ?? configuration["AzureServiceBus:ConnectionString"];
+
+
+// TEMPORAL — debug
+Console.WriteLine($"[DEBUG] ServiceBusConnectionString: '{configuration["ServiceBusConnectionString"]}'");
+Console.WriteLine($"[DEBUG] AzureServiceBus:ConnectionString: '{configuration["AzureServiceBus:ConnectionString"]}'");
+Console.WriteLine($"[DEBUG] Final value: '{serviceBusConnection}'");
+
         services.AddSingleton(sp =>
-            new ServiceBusClient(configuration["AzureServiceBus:ConnectionString"]));
+            new ServiceBusClient(serviceBusConnection));
 
         services.AddScoped<IEventPublisher, AzureServiceBusPublisher>();
 

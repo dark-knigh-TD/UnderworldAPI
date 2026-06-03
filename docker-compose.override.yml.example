@@ -1,0 +1,19 @@
+# ══════════════════════════════════════════════════════════════
+# UnderworldAPI — Docker Compose Override Template
+# ══════════════════════════════════════════════════════════════
+# IMPORTANT: Copy this file to docker-compose.override.yml and fill in your values.
+#            NEVER commit docker-compose.override.yml to source control.
+# ══════════════════════════════════════════════════════════════
+
+services:
+
+  sales-api:
+    environment:
+      # Azure Service Bus — full connection string
+      # Format: Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...
+      - AzureServiceBus__ConnectionString=
+
+  purchases-api:
+    environment:
+      # Azure Service Bus — full connection string (same as sales-api)
+      - AzureServiceBus__ConnectionString=
