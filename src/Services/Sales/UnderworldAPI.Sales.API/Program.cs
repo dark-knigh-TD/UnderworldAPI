@@ -27,7 +27,7 @@ if (!string.IsNullOrEmpty(keyVaultUri))
             ExcludeAzureCliCredential = false
         }));
 }
-
+//Test
 // ── Services ──────────────────────────────────────────────────
 builder.Services.AddApiServices();
 builder.Services.AddApplicationServices();
