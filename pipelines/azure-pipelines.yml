@@ -181,8 +181,7 @@ stages:
                         --max-replicas 3 \
                         --env-vars \
                           ASPNETCORE_ENVIRONMENT=Production \
-                          ConnectionStrings__SalesDb="Server=sqlserver,1433;Database=UnderworldDB;User Id=sa;Password=$(SQL_SA_PASSWORD);TrustServerCertificate=True;" \
-                          AzureServiceBus__ConnectionString="$(SERVICE_BUS_CONNECTION)" \
+                          AZURE_KEYVAULT_URI=https://underworld-kv.vault.azure.net/ \
                           AzureServiceBus__TopicName=sales-events \
                       || az containerapp update \
                         --name underworld-sales-api \
@@ -210,10 +209,10 @@ stages:
                         --min-replicas 0 \
                         --max-replicas 3 \
                         --env-vars \
-                          ASPNETCORE_ENVIRONMENT=Production \
-                          ConnectionStrings__PurchasesDb="Server=sqlserver,1433;Database=UnderworldDB;User Id=sa;Password=$(SQL_SA_PASSWORD);TrustServerCertificate=True;" \
-                          AzureServiceBus__ConnectionString="$(SERVICE_BUS_CONNECTION)" \
-                          AzureServiceBus__TopicName=purchases-events \
+                            ASPNETCORE_ENVIRONMENT=Production \
+                            AZURE_KEYVAULT_URI=https://underworld-kv.vault.azure.net/ \
+                            AzureServiceBus__TopicName=sales-events \
+                            AzureServiceBus__SubscriptionName=purchases-restock-subscription \
                       || az containerapp update \
                         --name underworld-purchases-api \
                         --resource-group $(RESOURCE_GROUP) \

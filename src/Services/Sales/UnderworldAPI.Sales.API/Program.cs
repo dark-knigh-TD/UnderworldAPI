@@ -9,11 +9,18 @@ using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── Key Vault — solo en producción ───────────────────────────
-// En desarrollo usa appsettings.Development.json
-// En producción lee secrets del Key Vault con Managed Identity
-// ── Key Vault ─────────────────────────────────────────────────
-var keyVaultUri = Environment.GetEnvironmentVariable("AZURE_KEYVAULT_URI");
+/// ── Azure Key Vault ───────────────────────────────────────────
+// Orden de prioridad:
+// 1. Variable de entorno AZURE_KEYVAULT_URI (launch.json en F5, Container App en Azure)
+// 2. AzureKeyVault:Uri desde appsettings.json (fallback, normalmente vacío)
+// Si ninguno está configurado, se omite Key Vault — los secrets vienen de appsettings.Development.json
+//
+// Por ambiente:
+// - Local F5        → launch.json inyecta AZURE_KEYVAULT_URI → az login (DefaultAzureCredential)
+// - docker-compose  → No usa Key Vault — secrets vienen del .env y docker-compose.override.yml
+// - Azure (Prod)    → Container App inyecta AZURE_KEYVAULT_URI → Managed Identity (DefaultAzureCredential)
+var keyVaultUri = Environment.GetEnvironmentVariable("AZURE_KEYVAULT_URI")
+    ?? builder.Configuration["AzureKeyVault:Uri"]; //ya lee de appsettings.development.json, pero se puede sobreescribir con variable de entorno para más flexibilidad
 if (!string.IsNullOrEmpty(keyVaultUri))
 {
     builder.Configuration.AddAzureKeyVault(
@@ -27,7 +34,7 @@ if (!string.IsNullOrEmpty(keyVaultUri))
             ExcludeAzureCliCredential = false
         }));
 }
-//Test
+
 // ── Services ──────────────────────────────────────────────────
 builder.Services.AddApiServices();
 builder.Services.AddApplicationServices();
