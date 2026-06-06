@@ -8,6 +8,8 @@
 .env
 .env.local
 .env.production
+.env.staging
+.env.development
 !.env.example    # este sí sube — es la plantilla sin valores
 
 # User-specific files
@@ -485,5 +487,18 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
+# ── Docker ────────────────────────────────────────────────────
+docker-compose.override.yml
+!docker-compose.override.yml.example
+
+# ── Azure ─────────────────────────────────────────────────────
+# Local Key Vault cache (DefaultAzureCredential token cache)
+.azure/
+TokenCache/
+
+# ── EF Core Migrations (optional — remove if you DO commit migrations) ──
+# **/Migrations/
+
+# ── Postman ───────────────────────────────────────────────────
 .postman/
 postman/environments/

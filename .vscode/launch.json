@@ -3,15 +3,31 @@
   "configurations": [
     {
       "name": "Debug Sales API",
-      "type": "dotnet",
+      "type": "coreclr",
       "request": "launch",
-      "projectPath": "${workspaceFolder}/src/Services/Sales/UnderworldAPI.Sales.API/UnderworldAPI.Sales.API.csproj"
+      "preLaunchTask": "build-sales",
+      "program": "${workspaceFolder}/src/Services/Sales/UnderworldAPI.Sales.API/bin/Debug/net10.0/UnderworldAPI.Sales.API.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Services/Sales/UnderworldAPI.Sales.API",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "AZURE_KEYVAULT_URI": "https://underworld-kv.vault.azure.net/"
+      }
     },
     {
       "name": "Debug Purchases API",
-      "type": "dotnet",
+      "type": "coreclr",
       "request": "launch",
-      "projectPath": "${workspaceFolder}/src/Services/Purchases/UnderworldAPI.Purchases.API/UnderworldAPI.Purchases.API.csproj"
+      "preLaunchTask": "build-purchases",
+      "program": "${workspaceFolder}/src/Services/Purchases/UnderworldAPI.Purchases.API/bin/Debug/net10.0/UnderworldAPI.Purchases.API.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Services/Purchases/UnderworldAPI.Purchases.API",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "AZURE_KEYVAULT_URI": "https://underworld-kv.vault.azure.net/"
+      }
     }
   ]
 }
